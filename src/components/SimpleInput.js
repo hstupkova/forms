@@ -10,10 +10,23 @@ const SimpleInput = (props) => {
     if (enteredNameIsValid) {
       console.log('Entered name is valid.');
     }
-  }, [enteredNameIsValid])
+  }, [enteredNameIsValid]);
 
   const nameInputChangeHandler = (event) => {
     setEnteredName(event.target.value);
+
+    // we can't use enteredName here in if check because it's a state and it's not updated immediately, just scheduled
+    if (event.target.value.trim() !== '') {
+      setEnteredNameIsValid(true);
+    }
+  };
+
+  const nameInputBlurHandler = (event) => {
+    setEnteredNameTouched(true);
+
+    if (enteredName.trim() === '') {
+      setEnteredNameIsValid(false);
+    }
   };
 
   const formSubmissionHandler = (event) => {
@@ -38,7 +51,9 @@ const SimpleInput = (props) => {
 
   const nameInputIsInvalid = !enteredNameIsValid && enteredNameTouched;
 
-  const nameInputClasses = nameInputIsInvalid ? 'form-control invalid' : 'form-control';
+  const nameInputClasses = nameInputIsInvalid
+    ? 'form-control invalid'
+    : 'form-control';
 
   return (
     <form onSubmit={formSubmissionHandler}>
@@ -49,9 +64,12 @@ const SimpleInput = (props) => {
           type="text"
           id="name"
           onChange={nameInputChangeHandler}
+          onBlur={nameInputBlurHandler}
           value={enteredName}
         />
-        {nameInputIsInvalid && <p className="error-text">Name must not be empty.</p>}
+        {nameInputIsInvalid && (
+          <p className="error-text">Name must not be empty.</p>
+        )}
       </div>
       <div className="form-actions">
         <button>Submit</button>
